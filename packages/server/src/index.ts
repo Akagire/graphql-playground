@@ -1,29 +1,47 @@
-import express, { Response, NextFunction } from 'express';
+import express from 'express';
+import { ApolloServer, gql } from 'apollo-server-express';
+
+const typeDefs = gql`
+  type Book {
+    title: String
+    author: String
+  }
+
+  type Query {
+    books: [Book]
+  }
+`;
+
+const books = [
+  {
+    title: 'The Awakening',
+    author: 'Kate Chopin',
+  },
+  {
+    title: 'City of Glass',
+    author: 'Paul Auster',
+  }
+];
+
+const resolvers = {
+  Query: {
+    books: () => books,
+  },
+};
+
+const server = new ApolloServer({
+  typeDefs,
+  resolvers,
+  csrfPrevention: true,
+  cache: 'bounded',
+});
 
 const app = express();
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
 
-// for debugging
-app.use((_, res: Response, next: NextFunction) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', '*');
-  res.header('Access-Control-Allow-Headers', '*');
-  next();
+server.start().then(() => {
+  server.applyMiddleware({ app });
 });
 
 app.listen(3001, () => {
-  console.log('Express server start on port 3001.');
-});
-
-app.get('/', (_, res: Response) => {
-  res.send({
-    status: 'OK',
-  });
-});
-
-app.get('/test', (_, res: Response) => {
-  res.send({
-    status: 'vvv',
-  });
+  console.log(`Express server ready at http://localhost:3001${server.graphqlPath}`);
 });
