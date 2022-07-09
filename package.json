@@ -1,0 +1,12 @@
+{
+  "name": "graphql-playground",
+  "license": "MIT",
+  "private": true,
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev:frontend": "yarn workspace @graphql-playground/frontend dev",
+    "dev:server": "yarn workspace @graphql-playground/server dev"
+  }
+}
